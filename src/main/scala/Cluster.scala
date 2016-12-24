@@ -1,7 +1,18 @@
 
 package Cluster {
 
-  case class Vec(data: Vector[Double])
+  class Vec(dataPassed: Vector[Double]) {
+    val data = dataPassed
+
+    def merge(that: Vec): Vec = {
+      val result = (0 to that.data.length-1).map { x =>
+        (data(x) + that.data(x)) / 2
+      }.toVector
+      new Vec(result)
+    }
+
+    override def toString() = data.toString()
+  }
   case class Cluster(left: Cluster = null, right: Cluster = null, vec: Vec, id: String = null, distance: Double = 0.0)
 
   object DistanceMetrics {

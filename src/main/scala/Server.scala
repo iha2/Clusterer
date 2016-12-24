@@ -8,7 +8,7 @@ import Cluster._
 
 package Server {
 
-  import scala.collection.mutable
+  import scala.collection.{Map, mutable}
 
   object Server extends App with CassandraConfig {
     implicit lazy val system = ActorSystem("Clusterer")
@@ -28,9 +28,8 @@ package Server {
       val clusters = fileData.data.zipWithIndex.map { case (x, i) =>
         new Cluster(null, null, new Vec(x), i.toString(), 0.0)
       }
-      val clAndLw = new ClosestAndLowestPair(DistanceMetrics.PearsonCorrelationScore(clusters(0).vec, clusters(1).vec), (0,1))
-      val hCluster = system.actorOf(Props(classOf[HClusterActor], mutable.Map[(String,String), Double](), -1, clAndLw), "hCluster")
-      hCluster ! clusters
+      val hCluster = system.actorOf(Props(classOf[HClusterActor]), "hCluster")
+      hCluster ! hClusterData(Map[(String,String), Double](), -1, clusters)
     }
   }
 }
