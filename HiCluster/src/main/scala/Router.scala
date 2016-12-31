@@ -1,24 +1,23 @@
+package server
 import akka.actor.{ActorSystem, Actor }
 import spray.routing.HttpService
 
-package Server {
 
-  class RouterActor extends Actor with Routes {
-    def actorRefFactory = context
-    implicit val system = context.system
+class RouterActor extends Actor with Routes {
+  def actorRefFactory = context
+  implicit val system = context.system
 
-    def receive = runRoute(routes)
-  }
+  def receive = runRoute(routes)
+}
 
-  trait Routes extends HttpService {
+trait Routes extends HttpService {
 
-    val system: ActorSystem
-    val routes = {
-      get {
-        path("") {
-          compressResponse() {
-            getFromResource("public/index.html")
-          }
+  val system: ActorSystem
+  val routes = {
+    get {
+      path("") {
+        compressResponse() {
+          getFromResource("public/index.html")
         }
       }
     }
