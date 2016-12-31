@@ -1,8 +1,8 @@
-name := "HiClusterer"
+name := "FuncHiClusterer"
 
 version := "1.0"
 
-scalaVersion := "2.10.2"
+scalaVersion := "2.10.6"
 
 resolvers += "spray repo" at "http://repo.spray.io"
 
@@ -17,7 +17,8 @@ libraryDependencies ++= {
     "io.spray"                % "spray-can"             % sprayVersion,
     "io.spray"                % "spray-client"          % sprayVersion,
     "io.spray"                % "spray-routing"         % sprayVersion,
-    "org.specs2"             %% "specs2-core"           % "3.8.5"     % "test")
+    "io.spray"                % "spray-testkit"         % "1.1.0" % "test",
+    "org.specs2"              % "specs2-core_2.10"      % "3.8.1"     % "test")
 }
 
 scalacOptions ++= Seq(
@@ -29,3 +30,4 @@ scalacOptions ++= Seq(
   "-target:jvm-1.7",
   "-encoding", "UTF-8"
 )
+
