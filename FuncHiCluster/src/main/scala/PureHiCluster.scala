@@ -30,9 +30,7 @@ class PureHiCluster(clusters: Vector[Cluster], distances: Map[(String, String), 
   }
 
   def start(starterIndex: Int, clusters:Vector[Cluster] = clusters): Cluster = {
-      val vec1 = clusters.head
-      val vec2 = clusters.tail.head
-      val futureCompletedDistance = List[Future[(Map[(String, String), Double], PairData)]]()
+      val (vec1, vec2) = (clusters.head, clusters.tail.head)
       val pairData = new PairData((vec1.id, vec2.id), Distance.pearsonCorrelationScore( vec1.vec, vec2.vec))
       val calculationFutures = generateClusterCalculations(clusters, distances, pairData)
 

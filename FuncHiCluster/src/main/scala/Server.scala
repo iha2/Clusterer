@@ -26,6 +26,7 @@ object Main {
     val directory = config.getConfig("application-settings.data-location").getString("dataDirectory")
     val file = config.getConfig("application-settings.data-location").getString("data-set-1")
     val importedData = new DataImporter(System.getProperty("user.home") + "/" + directory + file)
+
     val clusters = importedData.processFile.rows.zipWithIndex.map { case (x, i) =>
       new Cluster(new Vec(x.map( y => y.get)), null, null, 0.0, i.toString())
     }
