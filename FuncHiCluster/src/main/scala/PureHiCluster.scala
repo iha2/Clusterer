@@ -13,14 +13,11 @@ case class ComputeSet(distances: cluster.ClusterMap, clusters: Vector[Cluster], 
 
 class PureHiCluster(clusters: Vector[Cluster], distances: Map[(String, String), Double]) {
 
-  def generateClusterCalculations(clusters: Vector[Cluster], distances: Map[(String, String), Double], pairData: PairData) = {
-
-    def loop(clusters: Vector[Cluster], futureResults: List[Future[(Map[(String, String), Double], PairData)]]): List[Future[(Map[(String, String), Double], PairData)]]  =
-     clusters match {
-       case Vector() => futureResults
-       case x +: xs =>  loop(xs, Future[(Map[(String, String), Double], PairData)] { computeDistances(clusters.dropWhile { y => y.id != x.id}, distances, x, pairData) } +: futureResults)
-     }
-    loop(clusters, List())
+  def generateClusterCalculations(clusters: Vector[Cluster], distances: Map[(String, String), Double], pairData: PairData) =
+  clusters.foldLeft(List[Future[(Map[(String, String), Double], PairData)]]()) {
+    case (futureResults, x) => Future[(Map[(String, String), Double], PairData)] {
+                                computeDistances(clusters.dropWhile { y => y.id != x.id}, distances, x, pairData)
+                              } +: futureResults
   }
 
   def updateMostSimilar(acc: (Map[(String, String), Double], PairData), futureResult: (Map[(String, String), Double], PairData)) = {
@@ -67,9 +64,10 @@ class PureHiCluster(clusters: Vector[Cluster], distances: Map[(String, String), 
       case x +: xs => {
 
         // get the relational map of distances between clusters
-        val updatedDistances: Map[(String, String), Double] = if ( !(distances contains (comparedCluster.id, x.id)) ) {
-          distances + ((comparedCluster.id, x.id) -> Distance.pearsonCorrelationScore(comparedCluster.vec, x.vec)) }
-        else { distances }
+        val updatedDistances: Map[(String, String), Double] = distances match {
+          case y if ( !(y contains (comparedCluster.id, x.id)) ) =>  y + ((comparedCluster.id, x.id) -> Distance.pearsonCorrelationScore(comparedCluster.vec, x.vec))
+          case _ => distances
+        }
 
         val relevantDistance = updatedDistances((comparedCluster.id, x.id))
 
