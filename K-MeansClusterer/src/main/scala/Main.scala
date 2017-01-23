@@ -20,7 +20,7 @@ object Main extends App {
 
   def createRandomClusters(maxMinRanges: Vector[(Double, Double)], k: Int): Vector[Cluster] =
     (0 to k).map { currentK => {
-      val randomizedVector = maxMinRanges.map(x => x._1 + (random.nextFloat * (x._2 - x._2)))
+      val randomizedVector = maxMinRanges.map(x => x._1 + (random.nextDouble * (x._2 - x._1)))
       new Cluster(new Vec(randomizedVector), null, null, 0.0, currentK.toString())
     }
     }.toVector
@@ -76,11 +76,12 @@ object Main extends App {
       new Cluster(new Vec(x.map(y => y.get)), null, null, 0.0, i.toString())
     }
 
+  val ranges = rangeOfDimensions(clusters)
+  val randomizedCentroids = createRandomClusters(ranges, 4).zipWithIndex.map( x => (x._2 -> x._1)).toMap[Int, Cluster]
+
     def loop(index: Int, lastMatches: Map[Int, Cluster]): Map[Int, Cluster] = index match {
       case 0 => lastMatches
       case _ => {
-        val ranges = rangeOfDimensions(clusters)
-        val randomizedCentroids = createRandomClusters(ranges, 4).zipWithIndex.map( x => (x._2 -> x._1)).toMap[Int, Cluster]
         val futureCollection = closestMembersToCentroid(clusters, randomizedCentroids)
         val potentialCentroidNeighbours = Future.sequence(futureCollection)
         val centroidNeighbours = Await.result(potentialCentroidNeighbours, 600.seconds)
